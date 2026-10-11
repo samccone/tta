@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Realistic mock test suite runner demonstrating streaming test execution
+# Total duration: ~22 seconds
+# Loud failure at t = 2s, followed by passing suites
+
+set -u
+
+# Ensure immediate unbuffered output
+export PYTHONUNBUFFERED=1
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+START_TIME=$(date +%s)
+
+log_elapsed() {
+    NOW=$(date +%s)
+    DIFF=$((NOW - START_TIME))
+    printf "[+%02ds] " "$DIFF"
+}
+
+echo -e "${BOLD}${BLUE}RUNS${NC} Test suite initialized across 4 worker threads..."
+echo -e "${BOLD}${BLUE}RUNS${NC} Discovering test files in src/ ..."
+sleep 1
+
+log_elapsed
+echo -e "${GREEN}PASS${NC} src/utils/math.test.ts (142 ms)"
+sleep 1
+
+# t = 2s: LOUD FAILURE
+log_elapsed
+echo -e "${RED}${BOLD}FAIL${NC} ${BOLD}src/auth.test.ts${NC}"
+echo -e "${RED}● Auth > Token verification > should refresh expired JWT token${NC}"
+echo ""
+echo -e "    ${RED}AssertionError: Token expired (status 401)${NC}"
+echo -e "    Expected: 200 OK"
+echo -e "    Received: 401 Unauthorized"
+echo ""
+echo -e "      at verifyToken (src/auth.ts:88:13)"
+echo -e "      at Object.<anonymous> (src/auth.test.ts:42:15)"
+echo -e "      at processTicksAndRejections (node:internal/process/task_queues:95:5)"
+echo ""
+echo -e "${YELLOW}Notice: 1 test failed. Remaining 14 suites queued for execution...${NC}"
+echo ""
+
+# Continue running slow tests for another 20 seconds
+TESTS=(
+    "src/database/pool.test.ts:1820"
+    "src/database/migrations.test.ts:2100"
+    "src/payments/stripe.test.ts:2450"
+    "src/payments/webhooks.test.ts:1930"
+    "src/api/users.test.ts:1840"
+    "src/api/teams.test.ts:1750"
+    "src/api/billing.test.ts:2210"
+    "src/reports/export.test.ts:3100"
+    "src/reports/aggregations.test.ts:1920"
+    "src/notifications/email.test.ts:1600"
+)
+
+for item in "${TESTS[@]}"; do
+    FILE="${item%%:*}"
+    MS="${item##*:}"
+    sleep 2
+    log_elapsed
+    echo -e "${GREEN}PASS${NC} ${FILE} (${MS} ms)"
+done
+
+TOTAL_TIME=$(( $(date +%s) - START_TIME ))
+
+echo ""
+echo -e "${BOLD}Test Suites:${NC} ${RED}1 failed${NC}, ${GREEN}11 passed${NC}, 12 total"
+echo -e "${BOLD}Tests:${NC}       ${RED}1 failed${NC}, ${GREEN}73 passed${NC}, 74 total"
+echo -e "${BOLD}Snapshots:${NC}   0 total"
+echo -e "${BOLD}Time:${NC}        ${TOTAL_TIME}.18s"
+echo -e "${BOLD}Ran all test suites.${NC}"
+echo ""
+echo -e "${RED}Test run failed with exit code 1${NC}"
+
+exit 1

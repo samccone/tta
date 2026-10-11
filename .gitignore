@@ -1,0 +1,15 @@
+.env
+.env.*
+node_modules/
+__pycache__/
+*.log
+.aider.*
+
+# Downloaded harness binaries & archives
+fx
+opencode
+opencode.zip
+goose
+goose.tar.gz
+plandex
+plandex.tar.gz

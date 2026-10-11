@@ -1,0 +1,15 @@
+{
+  "name": "async-ux-benchmark",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Benchmark and reproducer for AI coding harness streaming awareness and process wait times.",
+  "scripts": {
+    "benchmark": "python3 run_benchmark.py",
+    "benchmark:live": "python3 run_live_tokens.py",
+    "setup": "./install.sh"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^2.1.296",
+    "@openai/codex": "^0.162.1"
+  }
+}

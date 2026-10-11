@@ -1,0 +1,5 @@
+aider-chat>=0.86.0
+smolagents>=1.26.0
+websockets>=13.0
+python-dotenv>=1.0.0
+requests>=2.30.0

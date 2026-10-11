@@ -1,0 +1,96 @@
+[
+  {
+    "harness": "Human Developer",
+    "type": "Real Terminal Execution",
+    "model": "Human Cognition",
+    "time_to_failure": 2.034,
+    "time_to_awareness": 2.034,
+    "wasted_idle_time": 0.0,
+    "ratio_vs_human": "1.0x",
+    "early_aborted": true,
+    "notes": "Developer spots red failure in stdout and cancels early via Ctrl+C"
+  },
+  {
+    "harness": "OpenAI Codex CLI (Live Low-Cost)",
+    "type": "Live Production Tokens",
+    "model": "gpt-4o-mini",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 13.24,
+    "wasted_idle_time": 11.20,
+    "ratio_vs_human": "6.5x",
+    "tokens_consumed": 15569,
+    "early_aborted": true,
+    "notes": "PTY yield boundary emitted at ~11s; LLM diagnosed failure at 13.24s with 4 passing tests still unneeded"
+  },
+  {
+    "harness": "Smolagents (Live Low-Cost)",
+    "type": "Live Production Tokens",
+    "model": "gpt-4o-mini",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 24.28,
+    "wasted_idle_time": 22.24,
+    "ratio_vs_human": "11.9x",
+    "tokens_consumed": 2723,
+    "early_aborted": false,
+    "notes": "Synchronous BashTool forward() executed subprocess.run() for full 22.15s duration"
+  },
+  {
+    "harness": "Aider CLI (Live Low-Cost)",
+    "type": "Live Production Tokens",
+    "model": "gpt-4o-mini",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 24.38,
+    "wasted_idle_time": 22.34,
+    "ratio_vs_human": "12.0x",
+    "tokens_consumed": 3810,
+    "early_aborted": false,
+    "notes": "CLI streamed stdout to terminal but p.wait() blocked LLM turn until full exit at t=24.17s"
+  },
+  {
+    "harness": "Vercel FX (Live Low-Cost)",
+    "type": "Live Production Tokens (Vercel AI Gateway)",
+    "model": "openai/gpt-4o-mini",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 25.77,
+    "wasted_idle_time": 23.73,
+    "ratio_vs_human": "12.6x",
+    "tokens_consumed": 11847,
+    "early_aborted": false,
+    "notes": "Native managed_execution.zig:startCaptured() blocked for 22,159ms until subprocess termination at t=25.77s; LLM completed diagnosis at t=29.50s"
+  },
+  {
+    "harness": "Pi Coding Agent (Live Low-Cost)",
+    "type": "Live Production Tokens (@earendil-works/pi-coding-agent)",
+    "model": "gpt-4o-mini",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 27.40,
+    "wasted_idle_time": 25.36,
+    "ratio_vs_human": "13.4x",
+    "early_aborted": false,
+    "notes": "Streams live to TUI via onData, but tool execution blocked on waitForChildProcess() until full exit at t=22.2s before LLM awareness at t=27.40s"
+  },
+  {
+    "harness": "Anthropic Claude Code (Live Low-Cost)",
+    "type": "Live Production Tokens",
+    "model": "claude-haiku-4-5-20251001",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 29.43,
+    "wasted_idle_time": 27.39,
+    "ratio_vs_human": "14.4x",
+    "tokens_consumed": 4120,
+    "early_aborted": false,
+    "notes": "Synchronous Bash tool held execution until child exit code 1 at t=22.2s before LLM response generation"
+  },
+  {
+    "harness": "Anomaly OpenCode (Live Low-Cost)",
+    "type": "Live Production Tokens",
+    "model": "gpt-4o-mini",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 30.29,
+    "wasted_idle_time": 28.25,
+    "ratio_vs_human": "14.9x",
+    "tokens_consumed": 4890,
+    "early_aborted": false,
+    "notes": "Effect fiber suspended in jobs.block awaiting handle.exitCode at t=26.92s before LLM diagnosis at t=30.29s"
+  }
+]
