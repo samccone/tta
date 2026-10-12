@@ -30,6 +30,7 @@ Run an individual harness:
 ./run_benchmark.py --harness opencode
 ./run_benchmark.py --harness aider
 ./run_benchmark.py --harness smolagents
+./run_benchmark.py --harness devin
 ```
 
 ### 2. Live API Token Benchmark (Real Frontier APIs)
@@ -39,6 +40,7 @@ Run an individual harness:
 ```bash
 OPENAI_API_KEY="sk-..."
 ANTHROPIC_API_KEY="sk-ant-..."
+DEVIN_API_KEY="HAYE-..."
 ```
 
 2. Run the live benchmarks:
@@ -56,4 +58,5 @@ python3 test_fx_live.py
 python3 test_opencode_live.py
 python3 test_aider_mini.py
 python3 test_smolagents_mini.py
+python3 test_devin_live.py
 ```

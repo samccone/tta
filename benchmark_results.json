@@ -92,5 +92,16 @@
     "tokens_consumed": 4890,
     "early_aborted": false,
     "notes": "Effect fiber suspended in jobs.block awaiting handle.exitCode at t=26.92s before LLM diagnosis at t=30.29s"
+  },
+  {
+    "harness": "Devin Local Agent (Live Production)",
+    "type": "Live Production Tokens (Devin CLI v3000.11.3)",
+    "model": "swe-1-6",
+    "time_to_failure": 2.04,
+    "time_to_awareness": 26.42,
+    "wasted_idle_time": 24.38,
+    "ratio_vs_human": "13.0x",
+    "early_aborted": false,
+    "notes": "Devin CLI ACP engine executed exec tool synchronously until child process exit at t=26.42s before model awareness"
   }
 ]

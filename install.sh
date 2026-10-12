@@ -63,16 +63,30 @@ if [ ! -f "${SCRIPT_DIR}/goose" ] && [ -f "${SCRIPT_DIR}/goose.tar.gz" ]; then
     tar -xzf "${SCRIPT_DIR}/goose.tar.gz" -C "${SCRIPT_DIR}"
 fi
 
+# Devin Local Agent binary
+if [ ! -f "${SCRIPT_DIR}/devin" ]; then
+    echo -e "Downloading Devin CLI binary..."
+    if [ ! -f "${SCRIPT_DIR}/devin.tar.gz" ]; then
+        curl -fsSL "https://static.devin.ai/cli/3000.11.3/devin-3000.11.3-aarch64-apple-darwin.tar.gz" -o "${SCRIPT_DIR}/devin.tar.gz" || true
+    fi
+    if [ -f "${SCRIPT_DIR}/devin.tar.gz" ]; then
+        tar -xzf "${SCRIPT_DIR}/devin.tar.gz" bin/devin 2>/dev/null || tar -xzf "${SCRIPT_DIR}/devin.tar.gz" devin 2>/dev/null || true
+        [ -f "${SCRIPT_DIR}/bin/devin" ] && mv "${SCRIPT_DIR}/bin/devin" "${SCRIPT_DIR}/devin" && rmdir "${SCRIPT_DIR}/bin" 2>/dev/null || true
+    fi
+fi
+
 # Ensure executable permissions
 chmod +x "${SCRIPT_DIR}/run-test" 2>/dev/null || true
 [ -f "${SCRIPT_DIR}/fx" ] && chmod +x "${SCRIPT_DIR}/fx"
 [ -f "${SCRIPT_DIR}/opencode" ] && chmod +x "${SCRIPT_DIR}/opencode"
 [ -f "${SCRIPT_DIR}/plandex" ] && chmod +x "${SCRIPT_DIR}/plandex"
 [ -f "${SCRIPT_DIR}/goose" ] && chmod +x "${SCRIPT_DIR}/goose"
+[ -f "${SCRIPT_DIR}/devin" ] && chmod +x "${SCRIPT_DIR}/devin"
 
 echo -e "${GREEN}✓ Standalone binaries verified:${NC}"
 [ -f "${SCRIPT_DIR}/fx" ] && echo -e "  - Vercel FX: $(${SCRIPT_DIR}/fx --version 2>/dev/null || echo 'installed')"
 [ -f "${SCRIPT_DIR}/opencode" ] && echo -e "  - OpenCode:  $(${SCRIPT_DIR}/opencode --version 2>/dev/null || echo 'installed')"
+[ -f "${SCRIPT_DIR}/devin" ] && echo -e "  - Devin:     $(${SCRIPT_DIR}/devin --version 2>/dev/null || echo 'installed')"
 
 # 4. Check Environment (.env)
 echo -e "\n${YELLOW}[4/4] Checking API Keys and environment...${NC}"

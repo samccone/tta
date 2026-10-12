@@ -30,6 +30,7 @@ FX_BIN = os.path.join(SCRIPT_DIR, "fx")
 OPENCODE_BIN = os.path.join(SCRIPT_DIR, "opencode")
 CLAUDE_BIN = os.path.join(SCRIPT_DIR, "node_modules/@anthropic-ai/claude-code-darwin-arm64/claude")
 CODEX_BIN = os.path.join(SCRIPT_DIR, "node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex")
+DEVIN_BIN = os.path.join(SCRIPT_DIR, "devin")
 
 def load_env():
     env_file = os.path.join(SCRIPT_DIR, ".env")
@@ -611,6 +612,22 @@ def benchmark_real_smolagents():
     }
 
 # ==============================================================================
+# 8. REAL DEVIN LOCAL AGENT (devin)
+# ==============================================================================
+def benchmark_real_devin():
+    from test_devin_live import run_devin_live
+    res = run_devin_live()
+    return {
+        "harness": "Devin Local Agent (v3000.11.3)",
+        "type": "Real Native Binary (Devin ACP)",
+        "time_to_failure": res["time_to_failure"],
+        "time_to_awareness": res["time_to_awareness"],
+        "wasted_idle_time": res["wasted_time"],
+        "early_aborted": False,
+        "notes": "Synchronous exec tool blocks turn until child process exit code 1"
+    }
+
+# ==============================================================================
 # MAIN & COMPARISON MATRIX
 # ==============================================================================
 def print_matrix(results):
@@ -629,7 +646,7 @@ def print_matrix(results):
 
 def main():
     parser = argparse.ArgumentParser(description="Run real harness benchmarks against ./run-test")
-    parser.add_argument("--harness", choices=["all", "human", "fx", "opencode", "aider", "claude", "codex", "smolagents"], default="all")
+    parser.add_argument("--harness", choices=["all", "human", "fx", "opencode", "aider", "claude", "codex", "smolagents", "devin"], default="all")
     args = parser.parse_args()
 
     results = []
@@ -647,6 +664,9 @@ def main():
         results.append(benchmark_real_aider())
     if args.harness in ("all", "smolagents"):
         results.append(benchmark_real_smolagents())
+    if args.harness in ("all", "devin"):
+        if os.path.exists(DEVIN_BIN):
+            results.append(benchmark_real_devin())
 
     if len(results) > 1:
         print_matrix(results)

@@ -28,6 +28,7 @@ RUN_TEST_CMD = os.path.join(SCRIPT_DIR, "run-test")
 CLAUDE_BIN = os.path.join(SCRIPT_DIR, "node_modules/@anthropic-ai/claude-code-darwin-arm64/claude")
 CODEX_BIN = os.path.join(SCRIPT_DIR, "node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex")
 OPENCODE_BIN = os.path.join(SCRIPT_DIR, "opencode")
+DEVIN_BIN = os.path.join(SCRIPT_DIR, "devin")
 
 def load_env():
     env_file = os.path.join(SCRIPT_DIR, ".env")
@@ -44,6 +45,7 @@ def check_keys():
     openai_key = os.getenv("OPENAI_API_KEY")
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     ai_gateway_key = os.getenv("AI_GATEWAY_API_KEY")
+    devin_key = os.getenv("DEVIN_API_KEY") or os.getenv("WINDSURF_API_KEY")
     
     print("\n" + "=" * 80)
     print("API KEY STATUS FOR LIVE RUN")
@@ -51,8 +53,9 @@ def check_keys():
     print(f"OPENAI_API_KEY:     {'Configured (sk-...)' if openai_key else 'MISSING'}")
     print(f"ANTHROPIC_API_KEY:  {'Configured (sk-ant-...)' if anthropic_key else 'MISSING'}")
     print(f"AI_GATEWAY_API_KEY: {'Configured' if ai_gateway_key else 'Not set (optional, for Vercel FX)'}")
+    print(f"DEVIN_API_KEY:      {'Configured' if devin_key else 'Not set (optional, for Devin Local Agent)'}")
     print("=" * 80 + "\n")
-    return openai_key, anthropic_key, ai_gateway_key
+    return openai_key, anthropic_key, ai_gateway_key, devin_key
 
 def run_live_codex():
     openai_key = os.getenv("OPENAI_API_KEY")
@@ -159,19 +162,29 @@ def run_live_claude():
         "wasted_time": (t_first_token or total_time) - 2.04
     }
 
+def run_live_devin():
+    devin_key = os.getenv("DEVIN_API_KEY") or os.getenv("WINDSURF_API_KEY") or "cog_s4ebokwkeptyoxq7j44fz5pjqpk3k4oiyakrfwp7t6iduhsa34xq"
+    if not os.path.exists(DEVIN_BIN):
+        print(f"[SKIP] Devin binary not found at {DEVIN_BIN}.")
+        return None
+
+    from test_devin_live import run_devin_live
+    return run_devin_live()
+
 def main():
-    openai_key, anthropic_key, ai_gateway_key = check_keys()
-    if not (openai_key or anthropic_key):
+    openai_key, anthropic_key, ai_gateway_key, devin_key = check_keys()
+    if not (openai_key or anthropic_key or devin_key):
         print("To run live token tests, please provide:")
         print("  1. OPENAI_API_KEY (for OpenAI Codex CLI, OpenCode, Aider)")
         print("  2. ANTHROPIC_API_KEY (for Anthropic Claude Code, OpenCode, Aider)")
-        print("You can set them in your terminal via:")
-        print("  export OPENAI_API_KEY='sk-...'")
-        print("  export ANTHROPIC_API_KEY='sk-ant-...'")
-        print("Or write them to a local .env file in /Users/samccone/repos/async_ux/.env")
+        print("  3. DEVIN_API_KEY (for Devin Local Agent)")
+        print("You can set them in your terminal or in .env")
         return
 
     results = []
+    if devin_key:
+        res = run_live_devin()
+        if res: results.append(res)
     if openai_key:
         res = run_live_codex()
         if res: results.append(res)
